@@ -388,3 +388,594 @@ sql优化原则
 尽可能从全局出发
 ```
 
+
+	（3）复合索引不能使用不等于（!=  <>）或is null (is not null)，否则自身以及右侧所有全部失效。
+		复合索引中如果有>，则自身和右侧索引全部失效。
+
+	explain select * from book where authorid = 1 and typeid =2 ;
+
+	-- SQL优化，是一种概率层面的优化。至于是否实际使用了我们的优化，需要通过explain进行推测。
+
+	explain select * from book where authorid != 1 and typeid =2 ;
+	explain select * from book where authorid != 1 and typeid !=2 ;
+		
+	
+	体验概率情况(< > =)：原因是服务层中有SQL优化器，可能会影响我们的优化。
+	drop index idx_typeid on book;
+	drop index idx_authroid on book;
+	alter table book add index idx_book_at (authorid,typeid);
+	explain select * from book where authorid = 1 and typeid =2 ;--复合索引at全部使用
+	explain select * from book where authorid > 1 and typeid =2 ; --复合索引中如果有>，则自身和右侧索引全部失效。
+	explain select * from book where authorid = 1 and typeid >2 ;--复合索引at全部使用
+	----明显的概率问题---
+	explain select * from book where authorid < 1 and typeid =2 ;--复合索引at只用到了1个索引
+	explain select * from book where authorid < 4 and typeid =2 ;--复合索引全部失效
+
+	--我们学习索引优化 ，是一个大部分情况适用的结论，但由于SQL优化器等原因  该结论不是100%正确。
+	--一般而言， 范围查询（> <  in），之后的索引失效。
+
+	（4）补救。尽量使用索引覆盖（using index）
+			（a,b,c）
+	select a,b,c from xx..where a=  .. and b =.. ;
+
+	(5) like尽量以“常量”开头，不要以'%'开头，否则索引失效
+	select * from xx where name like '%x%' ; --name索引失效
+	
+	explain select * from teacher  where tname like '%x%'; --tname索引失效
+
+	explain select * from teacher  where tname like 'x%';
+ 
+	explain select tname from teacher  where tname like '%x%'; --如果必须使用like '%x%'进行模糊查询，可以使用索引覆盖 挽救一部分。
+
+
+	（6）尽量不要使用类型转换（显示、隐式），否则索引失效
+	explain select * from teacher where tname = 'abc' ;
+	explain select * from teacher where tname = 123 ;//程序底层将 123 -> '123'，即进行了类型转换，因此索引失效
+
+	（7）尽量不要使用or，否则索引失效
+	explain select * from teacher where tname ='' or tcid >1 ; --将or左侧的tname 失效。
+
+8.一些其他的优化方法
+	（1）
+	exist和in
+	select ..from table where exist (子查询) ;
+	select ..from table where 字段 in  (子查询) ;
+
+	如果主查询的数据集大，则使用In   ,效率高。
+	如果子查询的数据集大，则使用exist,效率高。	
+
+	exist语法： 将主查询的结果，放到子查需结果中进行条件校验（看子查询是否有数据，如果有数据 则校验成功）  ，
+		    如果 复合校验，则保留数据；
+
+	select tname from teacher where exists (select * from teacher) ; 
+	--等价于select tname from teacher
+
+	
+	select tname from teacher where exists (select * from teacher where tid =9999) ;
+	
+	in:
+	select ..from table where tid in  (1,3,5) ;
+	
+
+	（2）order by 优化
+	using filesort 有两种算法：双路排序、单路排序 （根据IO的次数）
+	MySQL4.1之前 默认使用 双路排序；双路：扫描2次磁盘（1：从磁盘读取排序字段 ,对排序字段进行排序（在buffer中进行的排序）   2：扫描其他字段 ）
+		--IO较消耗性能
+	MySQL4.1之后 默认使用 单路排序  ： 只读取一次（全部字段），在buffer中进行排序。但种单路排序 会有一定的隐患 （不一定真的是“单路|1次IO”，有可能多次IO）。原因：如果数据量特别大，则无法 将所有字段的数据 一次性读取完毕，因此 会进行“分片读取、多次读取”。
+		注意：单路排序 比双路排序 会占用更多的buffer。
+			单路排序在使用时，如果数据大，可以考虑调大buffer的容量大小：  set max_length_for_sort_data = 1024  单位byte
+
+	如果max_length_for_sort_data值太低，则mysql会自动从 单路->双路   （太低：需要排序的列的总大小超过了max_length_for_sort_data定义的字节数）
+
+	提高order by查询的策略：
+	a.选择使用单路、双路 ；调整buffer的容量大小；
+	b.避免select * ...  
+	c.复合索引 不要跨列使用 ，避免using filesort
+	d.保证全部的排序字段 排序的一致性（都是升序 或 降序）
+		
+	
+9.SQL排查 - 慢查询日志:MySQL提供的一种日志记录，用于记录MySQL种响应时间超过阀值的SQL语句 （long_query_time，默认10秒）
+		慢查询日志默认是关闭的；建议：开发调优是 打开，而 最终部署时关闭。
+	
+	检查是否开启了 慢查询日志 ：   show variables like '%slow_query_log%' ;
+
+	临时开启：
+		set global slow_query_log = 1 ;  --在内存种开启
+		exit
+		service mysql restart
+
+	永久开启：
+		/etc/my.cnf 中追加配置：
+		vi /etc/my.cnf 
+		[mysqld]
+		slow_query_log=1
+		slow_query_log_file=/var/lib/mysql/localhost-slow.log
+
+	
+	慢查询阀值：
+		show variables like '%long_query_time%' ;
+
+	临时设置阀值：
+		set global long_query_time = 5 ; --设置完毕后，重新登陆后起效 （不需要重启服务）
+
+	永久设置阀值：
+			
+		/etc/my.cnf 中追加配置：
+		vi /etc/my.cnf 
+		[mysqld]
+		long_query_time=3
+
+
+	select sleep(4);
+	select sleep(5);
+	select sleep(3);
+	select sleep(3);
+	--查询超过阀值的SQL：  show global status like '%slow_queries%' ;
+	
+	(1)慢查询的sql被记录在了日志中，因此可以通过日志 查看具体的慢SQL。
+	cat /var/lib/mysql/localhost-slow.log
+
+	(2)通过mysqldumpslow工具查看慢SQL,可以通过一些过滤条件 快速查找出需要定位的慢SQL
+	mysqldumpslow --help
+	s：排序方式
+	r:逆序
+	l:锁定时间
+	g:正则匹配模式		
+
+
+	--获取返回记录最多的3个SQL
+		mysqldumpslow -s r -t 3  /var/lib/mysql/localhost-slow.log
+
+	--获取访问次数最多的3个SQL
+		mysqldumpslow -s c -t 3 /var/lib/mysql/localhost-slow.log
+
+	--按照时间排序，前10条包含left join查询语句的SQL
+		mysqldumpslow -s t -t 10 -g "left join" /var/lib/mysql/localhost-slow.log
+	
+	语法：
+		mysqldumpslow 各种参数  慢查询日志的文件
+
+
+10.分析海量数据
+   
+	a.模拟海量数据  存储过程（无return）/存储函数（有return）
+	create database testdata ;
+	use testdata
+create table dept
+(
+dno int(5) primary key default 0,
+dname varchar(20) not null default '',
+loc varchar(30) default ''
+)engine=innodb default charset=utf8;
+
+create table emp
+(
+eid int(5) primary key,
+ename varchar(20) not null default '',
+job varchar(20) not null default '',
+deptno int(5) not null default 0
+)engine=innodb default charset=utf8;
+	通过存储函数 插入海量数据：
+	创建存储函数：
+		randstring(6)  ->aXiayx  用于模拟员工名称
+
+
+	delimiter $ 
+	create function randstring(n int)   returns varchar(255) 
+	begin
+		declare  all_str varchar(100) default 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ;
+		declare return_str varchar(255) default '' ;
+		declare i int default 0 ; 
+		while i<n		 
+		do									
+			set return_str = concat(  return_str,      substring(all_str,   FLOOR(1+rand()*52)   ,1)       );
+			set i=i+1 ;
+		end while ;
+		return return_str;
+		
+	end $ 
+	
+
+--如果报错：You have an error in your SQL syntax，说明SQL语句语法有错，需要修改SQL语句；
+
+ 如果报错This function has none of DETERMINISTIC, NO SQL, or READS SQL DATA in its declaration and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable)
+	是因为 存储过程/存储函数在创建时 与之前的 开启慢查询日志冲突了 
+	解决冲突：
+	临时解决( 开启log_bin_trust_function_creators )
+		show variables like '%log_bin_trust_function_creators%';
+		set global log_bin_trust_function_creators = 1;
+	永久解决：
+	/etc/my.cnf 
+	[mysqld]
+	log_bin_trust_function_creators = 1
+
+
+	--产生随机整数
+	create function ran_num() returns int(5)
+	begin
+		declare i int default 0;
+		set i =floor( rand()*100 ) ;
+		return i ;
+
+	end $
+	
+
+
+	--通过存储过程插入海量数据：emp表中  ，  10000,   100000
+	create procedure insert_emp( in eid_start int(10),in data_times int(10))
+	begin 
+		declare i int default 0;
+		set autocommit = 0 ;
+		
+		repeat
+			
+			insert into emp values(eid_start + i, randstring(5) ,'other' ,ran_num()) ;
+			set i=i+1 ;
+			until i=data_times
+		end repeat ;
+		commit ;
+	end $
+
+
+	--通过存储过程插入海量数据：dept表中  
+		create procedure insert_dept(in dno_start int(10) ,in data_times int(10))
+		begin
+			declare i int default 0;
+			set autocommit = 0 ;
+			repeat
+			
+				insert into dept values(dno_start+i ,randstring(6),randstring(8)) ;
+				set i=i+1 ;
+				until i=data_times
+			end repeat ;
+		commit ;
+			
+
+		end$
+
+
+	--插入数据
+		delimiter ; 
+		call insert_emp(1000,800000) ;
+		call insert_dept(10,30) ;
+
+	
+	b.分析海量数据:
+	（1）profiles
+	show profiles ; --默认关闭
+	show variables like '%profiling%';
+	set profiling = on ; 
+	show profiles  ：会记录所有profiling打开之后的  全部SQL查询语句所花费的时间。缺点：不够精确，只能看到 总共消费的时间，不能看到各个硬件消费的时间（cpu  io ）
+
+	(2)--精确分析:sql诊断
+	 show profile all for query 上一步查询的的Query_Id
+	 show profile cpu,block io for query 上一步查询的的Query_Id
+
+	(3)全局查询日志 ：记录开启之后的 全部SQL语句。 （这次全局的记录操作 仅仅在调优、开发过程中打开即可，在最终的部署实施时 一定关闭）
+		show variables like '%general_log%';
+		
+		--执行的所有SQL记录在表中
+		set global general_log = 1 ;--开启全局日志
+		set global log_output='table' ; --设置 将全部的SQL 记录在表中
+
+		--执行的所有SQL记录在文件中
+		set global log_output='file' ;
+		set global general_log = on ;
+		set global general_log_file='/tmp/general.log' ;
+		
+
+		开启后，会记录所有SQL ： 会被记录 mysql.general_log表中。
+			select * from  mysql.general_log ;
+
+11.锁机制 ：解决因资源共享 而造成的并发问题。
+	示例：买最后一件衣服X
+	A:  	X	买 ：  X加锁 ->试衣服...下单..付款..打包 ->X解锁
+	B:	X       买：发现X已被加锁，等待X解锁，   X已售空
+
+	分类：
+	操作类型：
+		a.读锁（共享锁）： 对同一个数据（衣服），多个读操作可以同时进行，互不干扰。
+		b.写锁（互斥锁）： 如果当前写操作没有完毕（买衣服的一系列操作），则无法进行其他的读操作、写操作
+
+	操作范围：
+		a.表锁 ：一次性对一张表整体加锁。如MyISAM存储引擎使用表锁，开销小、加锁快；无死锁；但锁的范围大，容易发生锁冲突、并发度低。
+		b.行锁 ：一次性对一条数据加锁。如InnoDB存储引擎使用行锁，开销大，加锁慢；容易出现死锁；锁的范围较小，不易发生锁冲突，并发度高（很小概率 发生高并发问题：脏读、幻读、不可重复度、丢失更新等问题）。
+		c.页锁		
+	
+示例：
+
+	（1）表锁 ：  --自增操作 MYSQL/SQLSERVER 支持；oracle需要借助于序列来实现自增
+create table tablelock
+(
+id int primary key auto_increment , 
+name varchar(20)
+)engine myisam;
+
+
+insert into tablelock(name) values('a1');
+insert into tablelock(name) values('a2');
+insert into tablelock(name) values('a3');
+insert into tablelock(name) values('a4');
+insert into tablelock(name) values('a5');
+commit;
+
+	增加锁：
+	locak table 表1  read/write  ,表2  read/write   ,...
+
+	查看加锁的表：
+	show open tables ;
+
+	会话：session :每一个访问数据的dos命令行、数据库客户端工具  都是一个会话
+
+	===加读锁：
+		会话0：
+			lock table  tablelock read ;
+			select * from tablelock; --读（查），可以
+			delete from tablelock where id =1 ; --写（增删改），不可以
+
+			select * from emp ; --读，不可以
+			delete from emp where eid = 1; --写，不可以
+			结论1：
+			--如果某一个会话 对A表加了read锁，则 该会话 可以对A表进行读操作、不能进行写操作； 且 该会话不能对其他表进行读、写操作。
+			--即如果给A表加了读锁，则当前会话只能对A表进行读操作。
+
+		会话1（其他会话）：
+			select * from tablelock;   --读（查），可以
+			delete from tablelock where id =1 ; --写，会“等待”会话0将锁释放
+
+
+		会话1（其他会话）：
+			select * from emp ;  --读（查），可以
+			delete from emp where eno = 1; --写，可以
+			结论2：
+			--总结：
+				会话0给A表加了锁；其他会话的操作：a.可以对其他表（A表以外的表）进行读、写操作
+								b.对A表：读-可以；  写-需要等待释放锁。
+		释放锁: unlock tables ;
+
+
+
+	===加写锁：
+		会话0：
+			lock table tablelock write ;
+	
+			当前会话（会话0） 可以对加了写锁的表  进行任何操作（增删改查）；但是不能 操作（增删改查）其他表
+		其他会话：
+			对会话0中加写锁的表 可以进行增删改查的前提是：等待会话0释放写锁
+
+MySQL表级锁的锁模式
+MyISAM在执行查询语句（SELECT）前，会自动给涉及的所有表加读锁，
+在执行更新操作（DML）前，会自动给涉及的表加写锁。
+所以对MyISAM表进行操作，会有以下情况：
+a、对MyISAM表的读操作（加读锁），不会阻塞其他进程（会话）对同一表的读请求，
+但会阻塞对同一表的写请求。只有当读锁释放后，才会执行其它进程的写操作。
+b、对MyISAM表的写操作（加写锁），会阻塞其他进程（会话）对同一表的读和写操作，
+只有当写锁释放后，才会执行其它进程的读写操作。
+
+
+
+分析表锁定：
+	查看哪些表加了锁：   show open tables ;  1代表被加了锁
+	分析表锁定的严重程度： show status like 'table%' ;
+			Table_locks_immediate :即可能获取到的锁数
+			Table_locks_waited：需要等待的表锁数(如果该值越大，说明存在越大的锁竞争)
+	一般建议：
+		Table_locks_immediate/Table_locks_waited > 5000， 建议采用InnoDB引擎，否则MyISAM引擎
+
+	
+
+（2）行表（InnoDB）
+create table linelock(
+id int(5) primary key auto_increment,
+name varchar(20)
+)engine=innodb ;
+insert into linelock(name) values('1')  ;
+insert into linelock(name) values('2')  ;
+insert into linelock(name) values('3')  ;
+insert into linelock(name) values('4')  ;
+insert into linelock(name) values('5')  ;
+
+
+--mysql默认自动commit;	oracle默认不会自动commit ;
+
+为了研究行锁，暂时将自动commit关闭;  set autocommit =0 ; 以后需要通过commit
+
+
+	会话0： 写操作
+		insert into linelock values(	'a6') ;
+	   
+	会话1： 写操作 同样的数据
+		update linelock set name='ax' where id = 6;
+
+	对行锁情况：
+		1.如果会话x对某条数据a进行 DML操作（研究时：关闭了自动commit的情况下），则其他会话必须等待会话x结束事务(commit/rollback)后  才能对数据a进行操作。
+		2.表锁 是通过unlock tables，也可以通过事务解锁 ; 行锁 是通过事务解锁。
+
+		
+
+	行锁，操作不同数据：
+	
+	会话0： 写操作
+	
+		insert into linelock values(8,'a8') ;
+	会话1： 写操作， 不同的数据
+		update linelock set name='ax' where id = 5;
+		行锁，一次锁一行数据；因此 如果操作的是不同数据，则不干扰。
+
+
+	行锁的注意事项：
+	a.如果没有索引，则行锁会转为表锁
+	show index from linelock ;
+	alter table linelock add index idx_linelock_name(name);
+
+	
+	会话0： 写操作
+		update linelock set name = 'ai' where name = '3' ;
+		
+	会话1： 写操作， 不同的数据
+		update linelock set name = 'aiX' where name = '4' ;
+	
+
+	
+	会话0： 写操作
+		update linelock set name = 'ai' where name = 3 ;
+		
+	会话1： 写操作， 不同的数据
+		update linelock set name = 'aiX' where name = 4 ;
+		
+	--可以发现，数据被阻塞了（加锁）
+	-- 原因：如果索引类 发生了类型转换，则索引失效。 因此 此次操作，会从行锁 转为表锁。
+
+	b.行锁的一种特殊情况：间隙锁：值在范围内，但却不存在
+	 --此时linelock表中 没有id=7的数据
+	 update linelock set name ='x' where id >1 and id<9 ;   --即在此where范围中，没有id=7的数据，则id=7的数据成为间隙。
+	间隙：Mysql会自动给 间隙 加索 ->间隙锁。即 本题 会自动给id=7的数据加 间隙锁（行锁）。
+	行锁：如果有where，则实际加索的范围 就是where后面的范围（不是实际的值）
+
+	
+	如何仅仅是查询数据，能否加锁？ 可以   for update 
+	研究学习时，将自动提交关闭：
+		set autocommit =0 ;
+		start transaction ;
+		begin ;
+	 select * from linelock where id =2 for update ;
+
+	通过for update对query语句进行加锁。
+
+	行锁：
+	InnoDB默认采用行锁；
+	缺点： 比表锁性能损耗大。
+	优点：并发能力强，效率高。
+	因此建议，高并发用InnoDB，否则用MyISAM。
+
+	行锁分析：
+	  show status like '%innodb_row_lock%' ;
+		 Innodb_row_lock_current_waits :当前正在等待锁的数量  
+		  Innodb_row_lock_time：等待总时长。从系统启到现在 一共等待的时间
+		 Innodb_row_lock_time_avg  ：平均等待时长。从系统启到现在平均等待的时间
+		 Innodb_row_lock_time_max  ：最大等待时长。从系统启到现在最大一次等待的时间
+		 Innodb_row_lock_waits ：	等待次数。从系统启到现在一共等待的次数
+12.主从复制  （集群在数据库的一种实现）
+	windows:mysql 主
+	linux:mysql从
+
+	安装windows版mysql:
+		如果之前计算机中安装过Mysql，要重新再安装  则需要：先卸载 再安装
+		先卸载：
+			通过电脑自带卸载工具卸载Mysql (电脑管家也可以)
+			删除一个mysql缓存文件C:\ProgramData\MySQL
+			删除注册表regedit中所有mysql相关配置
+			--重启计算机
+			
+		安装MYSQL：
+			安装时，如果出现未响应：  则重新打开D:\MySQL\MySQL Server 5.5\bin\MySQLInstanceConfig.exe
+
+		图形化客户端： SQLyog, Navicat
+
+
+		如果要远程连接数据库，则需要授权远程访问。 
+		授权远程访问 :(A->B,则再B计算机的Mysql中执行以下命令)
+		GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;
+		FLUSH PRIVILEGES;
+	
+		如果仍然报错：可能是防火墙没关闭 ：  在B关闭防火墙  service iptables stop 
+
+
+
+	实现主从同步（主从复制）：图
+		1.master将改变的数 记录在本地的 二进制日志中（binary log） ；该过程 称之为：二进制日志件事
+		2.slave将master的binary log拷贝到自己的 relay log（中继日志文件）中
+		3.中继日志事件，将数据读取到自己的数据库之中
+	MYSQL主从复制 是异步的，串行化的， 有延迟
+	
+	master:slave = 1:n
+
+	配置： 
+	windows(mysql: my.ini)
+	  linux(mysql: my.cnf)
+
+	配置前，为了无误，先将权限(远程访问)、防火墙等处理：
+		关闭windows/linux防火墙： windows：右键“网络”   ,linux: service iptables stop
+		Mysql允许远程连接(windowos/linux)：
+			GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;
+			FLUSH PRIVILEGES;
+	
+
+主机（以下代码和操作 全部在主机windows中操作）：
+my.ini
+[mysqld]
+#id
+server-id=1
+#二进制日志文件（注意是/  不是\）
+log-bin="D:/MySQL/MySQL Server 5.5/data/mysql-bin"
+#错误记录文件
+log-error="D:/MySQL/MySQL Server 5.5/data/mysql-error"
+#主从同步时 忽略的数据库
+binlog-ignore-db=mysql
+#(可选)指定主从同步时，同步哪些数据库
+binlog-do-db=test	
+
+windows中的数据库 授权哪台计算机中的数据库 是自己的从数据库：	
+ GRANT REPLICATION slave,reload,super ON *.* TO 'root'@'192.168.2.%' IDENTIFIED BY 'root';
+ flush privileges ; 
+
+	查看主数据库的状态（每次在左主从同步前，需要观察 主机状态的最新值）
+		show master status;  （mysql-bin.000001、 107）
+
+从机（以下代码和操作 全部在从机linux中操作）：
+
+
+my.cnf
+[mysqld]
+server-id=2
+log-bin=mysql-bin
+replicate-do-db=test
+
+linux中的数据 授权哪台计算机中的数控 是自己的主计算机
+CHANGE MASTER TO 
+MASTER_HOST = '192.168.2.2', 
+MASTER_USER = 'root', 
+MASTER_PASSWORD = 'root', 
+MASTER_PORT = 3306,
+master_log_file='mysql-bin.000001',
+master_log_pos=107;
+	如果报错：This operation cannot be performed with a running slave; run STOP SLAVE first
+	解决：STOP SLAVE ;再次执行上条授权语句
+
+
+开启主从同步：
+	从机linux:
+	start slave ;
+	检验  show slave status \G	主要观察： Slave_IO_Running和 Slave_SQL_Running，确保二者都是yes；如果不都是yes，则看下方的 Last_IO_Error。
+本次 通过 Last_IO_Error发现错误的原因是 主从使用了相同的server-id， 检查:在主从中分别查看serverid:  show variables like 'server_id' ;
+	可以发现，在Linux中的my.cnf中设置了server-id=2，但实际执行时 确实server-id=1，原因：可能是 linux版Mysql的一个bug，也可能是 windows和Linux版本不一致造成的兼容性问题。
+	解决改bug： set global server_id =2 ;
+
+	stop slave ;
+	 set global server_id =2 ;
+	start slave ;
+	 show slave status \G
+
+	演示：
+	主windows =>从
+
+	windows:
+	将表，插入数据  
+	观察从数据库中该表的数据
+
+
+数据库+后端
+
+	spring boot（企业级框架,目前使用较多）  
+		
+	
+
+		
+	
+
+
+
+
+
+
+
