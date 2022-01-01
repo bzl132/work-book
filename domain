@@ -1,1 +1,80 @@
-<mxfile host="app.diagrams.net" modified="2022-01-01T04:45:15.567Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36" version="16.1.2" etag="9NtbqVZjnz2WxbpLjRZW" type="github"><diagram id="HS0xgFDnavDGrnJd9bgN">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2022-01-01T06:42:18.828Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36" etag="G3wzrsUBJvfCFdyBSiZ3" version="16.1.2" type="github">
+  <diagram id="HS0xgFDnavDGrnJd9bgN" name="Page-1">
+    <mxGraphModel dx="786" dy="470" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-1" target="ZxFnhr-dpkdX9zan_-tR-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-1" value="集合" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-4" value="api" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="180" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-5" target="ZxFnhr-dpkdX9zan_-tR-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-5" value="用户" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-6" target="ZxFnhr-dpkdX9zan_-tR-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-6" target="ZxFnhr-dpkdX9zan_-tR-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-6" value="集合注册" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-7" target="ZxFnhr-dpkdX9zan_-tR-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-7" target="ZxFnhr-dpkdX9zan_-tR-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-7" value="生成密匙&lt;br&gt;key&lt;br&gt;token" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-11" value="添加成员" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-13" value="添加api" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="450" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-15" value="选择父子集合关系" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-17" value="用户" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="810" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-18" target="ZxFnhr-dpkdX9zan_-tR-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-18" value="api拉取" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-19" target="ZxFnhr-dpkdX9zan_-tR-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-19" value="校验密匙" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-21" target="ZxFnhr-dpkdX9zan_-tR-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-21" value="查找集合下匹配的api" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-23" value="对比后更新数据，升级版本" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="610" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
