@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-01-01T06:42:18.828Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36" etag="G3wzrsUBJvfCFdyBSiZ3" version="16.1.2" type="github">
+<mxfile host="app.diagrams.net" modified="2022-01-01T06:58:11.150Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36" etag="RwlV_JBCOQbWYWBdRDF9" version="16.1.2" type="github">
   <diagram id="HS0xgFDnavDGrnJd9bgN" name="Page-1">
     <mxGraphModel dx="786" dy="470" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -50,9 +50,6 @@
         <mxCell id="ZxFnhr-dpkdX9zan_-tR-15" value="选择父子集合关系" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="150" y="440" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="ZxFnhr-dpkdX9zan_-tR-17" value="用户" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="150" y="810" width="120" height="60" as="geometry" />
-        </mxCell>
         <mxCell id="ZxFnhr-dpkdX9zan_-tR-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-18" target="ZxFnhr-dpkdX9zan_-tR-19">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -73,6 +70,78 @@
         </mxCell>
         <mxCell id="ZxFnhr-dpkdX9zan_-tR-23" value="对比后更新数据，升级版本" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="610" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="ZxFnhr-dpkdX9zan_-tR-35" target="ZxFnhr-dpkdX9zan_-tR-37" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="ZxFnhr-dpkdX9zan_-tR-35" target="ZxFnhr-dpkdX9zan_-tR-37" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="ZxFnhr-dpkdX9zan_-tR-35" target="ZxFnhr-dpkdX9zan_-tR-38" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-35" value="用户" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="1090" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="ZxFnhr-dpkdX9zan_-tR-37" target="ZxFnhr-dpkdX9zan_-tR-39" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-37" value="本地" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="1040" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-38" target="ZxFnhr-dpkdX9zan_-tR-51">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-38" value="外部" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="1140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-39" target="ZxFnhr-dpkdX9zan_-tR-44">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-39" value="创建用户" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1040" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-41" target="ZxFnhr-dpkdX9zan_-tR-42">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-41" value="api更新" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-56" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-42" target="ZxFnhr-dpkdX9zan_-tR-55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-42" value="校验用户权限" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-44" value="赋予多个角色" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="1040" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-46" target="ZxFnhr-dpkdX9zan_-tR-47">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-46" value="角色" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="1240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-47" target="ZxFnhr-dpkdX9zan_-tR-49">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-47" value="维护角色" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-49" value="分配权限" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="1240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-54" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZxFnhr-dpkdX9zan_-tR-51" target="ZxFnhr-dpkdX9zan_-tR-53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-51" value="创建本地用户并关联" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-53" value="赋予多个角色" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="1140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ZxFnhr-dpkdX9zan_-tR-55" value="更新信息并升级版本" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="720" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
